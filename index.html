@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Управление кластером серверов 1С</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Управление кластером серверов 1С">
+
+    <meta name="description" content="Управление кластером серверов 1С">
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="msapplication-TileColor" content="#F7F7F7">
+    <meta name="theme-color" content="#F7F7F7">
+
+    <link href="js/jquery.mobile-1.4.5.min.css" rel="stylesheet" type="text/css">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js/jquery.mobile-1.4.5.min.js"></script>
+
+    <script src="https://unpkg.com/vue@next"></script>
+
+    <link href="js/may.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="js/chartist.min.css">
+    <script src="js/chartist.min.js"></script>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+</head>
+
+<body>
+    <!--Стартовая кластеров-->
+    <div data-role="page" id="clusters">
+        <div data-role="panel" id="menu-cluster">
+            <app-menu></app-menu>
+        </div>
+        <div data-role="header" data-position="fixed">
+            <a href="#menu-cluster" data-role="button" data-icon="bars" data-iconpos="notext" class="open_menu">Открыть
+                меню</a>
+            <h6>Кластеры</h6>
+        </div>
+        <div data-role="content">
+            <a href="#" id="get_cluster" data-role="button" data-icon="refresh" data-iconpos="notext">Получить
+                кластер</a>
+            <div id="list_clusters">
+                <ul>
+                    <li v-for='cluster in clusters' :id='cluster.Ид'>{{cluster.Имя}} -
+                        {{cluster.АдресСервера}}:{{cluster.ПортСервера}}</li>
+                </ul>
+            </div>
+            <a href="#" data-role="button" id="get_count_sessions_bases" data-icon="refresh">Получить количество пользователей в базах</a>
+            <div id="count_sessions_bases" class="ct-chart ct-perfect-fourth"></div>
+        </div>
+        <div class="ui-footer-fixed" data-role="footer">
+            <h6>@froloff</h6>
+        </div>
+    </div>
+    <!--Страница Информационных баз-->
+    <div data-role="page" id="info_bases">
+        <div data-role="panel" id="menu-bases">
+            <app-menu></app-menu>
+        </div>
+        <div data-role="header" data-position="fixed">
+            <a href="#menu-bases" data-role="button" data-icon="bars" data-iconpos="notext" class="open_menu">Открыть
+                меню</a>
+            <h6>Базы</h6>
+        </div>
+        <div data-role="popup" id="info_base" data-dismissible="false">
+            <a href="#" data-rel="back"
+                class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-left">Закрыть</a>
+            <h4 align="center">Информация о базе</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Параметр</th>
+                        <th>Значение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for='(base, index) in info'>
+                        <td>{{index}}</td>
+                        <td>{{base}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <fieldset class="ui-grid-b">
+                <div class="ui-block-a"><input type="button" value="Сеансы" @click='sessions_base'></div>
+                <div class="ui-block-b"><input type="button" value="Заблокировать" v-if='bloc' @click='block_base'></div>
+                <div class="ui-block-b"><input type="button" value="Разблокировать" v-if='!(bloc)'></div>
+                <div class="ui-block-c"><input type="button" value="Авторизация" @click='autor'></div>
+            </fieldset>
+        </div>
+        <div data-role="popup" id="block_base">
+            <h4 align="center">Блокировка базы</h4>
+            <form action="">
+                <label for="База">База</label>
+                <input type="text" name="База" value="">
+                <label for="Сообщение">Сообщение</label>
+                <input type="text" name="Сообщение" value="База будет заблокирована" class="messeg">
+                <label for="Ключ">Ключ блокировки базы</label>
+                <input type="text" name="Ключ">
+                <label for="ДатаНачалаБлокировки">Дата начала блокировки</label>
+                <input type="datetime-local" data-clear-btn="true" name="ДатаНачалаБлокировки" value="" class="data">
+                <label for="ДатаОкончанияБлокировки">Дата окончания блокировки</label>
+                <input type="datetime-local" data-clear-btn="true" name="ДатаОкончанияБлокировки" value="" class="data">
+                <label for="БлокировкаРегламентныхЗаданий">Блокировать регламентные задания
+                    <input type="checkbox" name="БлокировкаРегламентныхЗаданий">
+                </label>
+                <label for="Пользователь">Пользователь</label>
+                <input type="text" name="Пользователь">
+                <label for="Пароль">Пароль</label>
+                <input type="password" name="Пароль">                
+            </form>
+            <a data-role="button">Заблокировать</a>
+        </div>
+        <div data-role="popup" id="autor_base">
+            <form>
+                <div style="padding: 10px 20px;">
+                    <h4>Укажите авторизацию</h4>
+                    <label for="user_base">Пользователь</label>
+                    <input id="user_base" name="Пользователь" type="text">
+                    <label for="pass_base">Пароль</label>
+                    <input id="pass_base" name="Пароль" type="password">
+                    <button type="button" id="set_autor_base">Записать</button>
+                </div>
+            </form>
+        </div>
+        <div data-role="content" id="list_bases">
+            <a href="#" data-role="button" id="get_bases" data-icon="refresh" data-iconpos="notext">Обновить список
+                баз</a>
+            <h4>Список баз ({{count()}})</h4>
+            <div id="table_head" class="table_head">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Имя базы</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div id="table_body">
+                <table>
+                    <tbody>
+                        <tr v-for='base in bases' :id='base.Имя' @click='click'>
+                            <td>{{base.Имя}}</td>
+                            <td>{{base.Описание}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="ui-footer-fixed" data-role="footer">
+            <h6>@froloff</h6>
+        </div>
+    </div>
+    <!--Страница сеансов-->
+    <div data-role="page" id="sessions">
+        <div data-role="panel" id="menu-sessions">
+            <app-menu></app-menu>
+        </div>
+        <div data-role="header" data-position="fixed">
+            <a href="#menu-sessions" data-role="button" data-icon="bars" data-iconpos="notext" class="open_menu">Открыть
+                меню</a>
+            <h6>Сеансы</h6>
+        </div>
+        <div data-role="content">
+            <a href="#" data-role="button" id="get_sessions" data-icon="refresh" data-iconpos="notext">Обновить
+                сеансы</a>
+            <div id="list_sessions">
+                <h4>Сеансы: {{base}} ({{count()}})</h4>
+                <div>
+                    <input type="text" id="filtr_sessions" data-mini="true" placeholder="Поиск" value="" size="10">
+                    <div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th data-priority="persist">База</th>
+                                    <th data-priority="persist">Пользователь</th>
+                                    <th data-priority="persist">Спящий</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div id="table_scroll">
+                        <table>
+                            <tbody>
+                                <tr v-for='session in sessions' :id='session.Ид' @click='click'>
+                                    <td>{{session.База}}</td>
+                                    <td>{{session.Пользователь}}</td>
+                                    <td>{{session.Спящий}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div data-role="popup" id="info_session">
+                <template></template>
+            </div>
+        </div>
+        <div class="ui-footer-fixed" data-role="footer">
+            <h6>@froloff</h6>
+        </div>
+    </div>
+    <!-- Страница Настроек -->
+    <div data-role="page" id="settings">
+        <div data-role="panel" id="menu-settings">
+            <app-menu></app-menu>
+        </div>
+        <div data-role="header" data-position="fixed">
+            <a href="#menu-settings" data-role="button" data-icon="bars" data-iconpos="notext" class="open_menu">Открыть
+                меню</a>
+            <h6>Настройки</h6>
+        </div>
+        <div data-role="content">
+            <form>
+                <h4>Данные сервера</h4>
+                <label for="host">Адрес сервера</label>
+                <input id="host" name="Сервер" type="text" placeholder="http://1.1.1.1:1850">
+            </form>
+        </div>
+        <div class="ui-footer-fixed" data-role="footer">
+            <h6>@froloff</h6>
+        </div>
+    </div>
+    <!-- Страница информации -->
+    <div data-role="page" id="info">
+        <div data-role="panel" id="menu-info">
+            <app-menu></app-menu>
+        </div>
+        <div data-role="header" data-position="fixed">
+            <a href="#menu-info" data-role="button" data-icon="bars" data-iconpos="notext" class="open_menu">Открыть
+                меню</a>
+            <h6>Информация</h6>
+        </div>
+        <div data-role="content">
+            <h4>Информация о приложении</h4>
+            <h4>V: 1.0.0</h4>
+            <p>Приложение предназначено для доступа к функционалу консоли управления кластером 1С.</p>
+            <p>Можно работать</p>
+        </div>
+        <div class="ui-footer-fixed" data-role="footer">
+            <h6>@froloff</h6>
+        </div>
+    </div>
+</body>
+<script src="js/may.js"></script>
+<script src="js/app.js"></script>
+
+</html>
+<script>
+    if (navigator.serviceWorker.controller) {
+        console.log('[PWA Builder] active service worker found, no need to register')
+    } else {
+        navigator.serviceWorker.register('sw.js', {
+            scope: './'
+        }).then(function (reg) {
+            console.log('Service worker has been registered for scope:' + reg.scope);
+        });
+    }
+</script>

@@ -1,0 +1,22 @@
+
+table{
+    width: 90%;
+    border-collapse: collapse;
+    border-color: darkgray;
+    margin: auto;
+    overflow: hidden; 
+    border-radius: 6px 6px 0px 0px;
+    -moz-border-radius: 6px 6px 0px 0px;
+    -khtml-border-radius: 6px 6px 0px 0px;
+    box-shadow: #9FC6E5  0.2em 0.2em 0.1em;
+}
+thead{
+    background-color: #e9e9e9;
+}
+tr{
+    border: 1px solid darkgray;
+}
+.inline{
+    display: inline-table;
+    /*float: left;*/
+}

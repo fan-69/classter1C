@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <!--
+  Customize this policy to fit your own app's needs. For more guidance, see:
+      https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+  Some notes:
+    * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+    * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+      * Enable inline JS: add 'unsafe-inline' to default-src
+  -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content:">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+
+  <meta name="theme-color" content="#007aff">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <title>Claster1C</title>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" href="assets/icons/favicon.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <link rel="stylesheet" href="framework7/framework7-bundle.min.css">
+  <link rel="stylesheet" href="css/icons.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+
+<body>
+  <div id="app">
+    
+    <!-- Your main view, should have "view-main" class -->
+    <div class="view view-main view-init safe-areas">
+      <div class="page" data-name="bases">
+        <div class="panel panel-left" id="panel_menu">
+          <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner sliding">
+              <div class="title">МЕНЮ</div>
+            </div>
+          </div>
+          <div class="list menu-list">
+            <ul>
+              <li><a href="index.html" class="col button button-large button-fill"><i class="f7-icons">house</i>&emsp;На главную</a></li>
+              <li><a href="bases.html" class="col button button-large button-fill"><i class="f7-icons">flowchart_fill</i>&emsp;Базы</a></li>
+              <li><a class="col button button-large button-fill"><i class="f7-icons">person_3</i>&emsp;Сеансы</a></li>
+              <li><a class="col button button-large button-fill"><i class="f7-icons">gear_alt</i>&emsp;Настройки</a></li>
+              <li><a class="col button button-large button-fill"><i class="f7-icons">info</i>&emsp;Итформация</a></li>
+            </ul>
+          </div>
+        </div>
+        <!-- Top Navbar -->
+        <div class="navbar">
+          <div class="navbar-bg"></div>
+          <div class="navbar-inner sliding">
+            <div class="title">Список баз данных</div>
+          </div>
+        </div>
+        <!-- Toolbar-->
+        <div class="toolbar toolbar-bottom">
+          <div class="toolbar-inner">
+            <a href="#" class="col button button-raised button-round open-panel-left">
+              <i class="material-icons">format_indent_decrease</i>МЕНЮ</a>
+            <a href="#" class="link"><i class="f7-icons">arrowshape_turn_up_left</i></a>
+          </div>
+        </div>
+        <!-- Scrollable page content-->
+        <div class="page-content">
+          <div class="block block-strong">
+            <p>Здесь будут данные по кластеру</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+    
+  </div>
+
+  <!-- Framework7 library -->
+  <script src="framework7/framework7-bundle.min.js"></script>
+
+
+  <!-- App routes -->
+  <script src="js/routes.js"></script>
+  <!-- App store -->
+  <script src="js/store.js"></script>
+  <!-- App scripts -->
+  <script src="js/app.js"></script>
+
+  <script src="js/my.js"></script>
+</body>
+
+</html>
